@@ -8,6 +8,6 @@ Then I decided to go with my own color transition algorithm so I created `Colori
 
 Next, I created `WelcomeMessage.py` which is now the welcome message of my shell sessions like this:
 
-![Alt Text](docs/welcome.gif)
+![Alt Text](docs/example.gif)
 
 Next thing I want to do is polishing some edges and try generating the text ascii banners within the script instead of using the `taag` online app. Maybe something such as https://github.com/sepandhaghighi/art will do the trick.
