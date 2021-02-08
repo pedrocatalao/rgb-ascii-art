@@ -9,7 +9,7 @@ import sys
 
 # Check arguments
 if len(sys.argv) < 2:
-    print "Usage: " + sys.argv[0] + " <inputfile> <outputfile>"
+    print("Usage: " + sys.argv[0] + " <inputfile> <outputfile>")
     exit(1)
 
 # Read original file
