@@ -60,7 +60,6 @@ for c in range(number_of_colors):
 
 # Generate and print color coded characters
 for l in content:
-    line=""
     for c in range(len(l)):
         r = all_colors_ansi[c][0]
         g = all_colors_ansi[c][1]
