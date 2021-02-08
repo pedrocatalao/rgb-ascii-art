@@ -73,3 +73,6 @@ for l in content:
     # Spins colors before going to next line
     for i in range(spinSpeed):
         all_colors_ansi.append(all_colors_ansi.pop(0))
+
+# Try something with animation
+# https://tldp.org/HOWTO/Bash-Prompt-HOWTO/x361.html
