@@ -1,14 +1,13 @@
 #!/usr/bin/python
 
-# This script converts a text file color tags with hex values to ansi codes
-# So first generate your ascii here: http://patorjk.com/software/taag/
-# Then colorize it here: http://patorjk.com/text-color-fader/
+# This script will colorize a text file with smooth color transitions
+# first generate your ascii here: http://patorjk.com/software/taag/
 
 import re
 import sys
 
 # Check arguments
-if len(sys.argv) < 1:
+if len(sys.argv) < 2:
     print("Usage: " + sys.argv[0] + " <inputfile> <outputfile>")
     exit(1)
 
@@ -49,6 +48,7 @@ for c in range(number_of_colors):
         b = int((1.0-p) * COLORS[c][2] + p * COLORS[c+1][2] + 0.5)
         all_colors_ansi.append((r, g, b))
 
+result=[]
 for l in content:
     line=""
     for c in range(len(l)):
@@ -57,10 +57,15 @@ for l in content:
         b = all_colors_ansi[c][2]
         line = line + "\033[38;2;" + str(r) + ";" + str(g) + ";" + str(b) + "m" + l[c]
 
-    print(line)
+    result.append(line)
     for i in range(spinSpeed):
         all_colors_ansi.append(all_colors_ansi.pop(0))
-    
+
+output = "\n" + "\n".join(result) + "\n\n"
+output_file = open(sys.argv[2],"w+")
+output_file.write(output)
+print(output),
+
 
 # TODO: Spin colors - done
 # TODO: ASK for the colors (when user enters empty line, that's the last color) - accept hex codes #ff00d3
