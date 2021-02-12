@@ -19,7 +19,7 @@ It will also take a few other parameters in order to configure the result:
   -w width    max width of the banner
 ```
 
-![Alt Text](docs/example1.png)
+<img src="docs/example1.png" width="600" height="329">
 
 ### welcome_message
 
