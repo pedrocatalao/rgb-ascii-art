@@ -1,13 +1,49 @@
-# rgb-ascii-art
+# RGB ASCII art tools
 
-This is part of my learning process with Python :)
+This is my first go with Python :)
 
-Initially created `HexToAnsiColors.py` to convert na hex color coded ascii banner created with http://patorjk.com/software/taag/ and coloured with http://patorjk.com/text-color-fader/, the output will be something you can colorfully print in you terminal.
+This consists of a couple of small python scripts:
 
-Then I decided to go with my own color transition algorithm so I created `ColorizeAscii.py` which basically also receives an ascii banner but no need to use the online color fader.
+### `colorize_ascii`
 
-Next, I created `WelcomeMessage.py` which is now the welcome message of my shell sessions like this:
+This can be ran by specifying an `input file` or a `text string` to generate an ASCII banner.
+
+It will also take a few other parameters in order to configure the result:
+```
+  -i file     input file
+  -t text     text to generate
+  -f font     font to use, check them here: http://www.figlet.org/examples.html
+  -c colors   comma separated hex colors (default: RGB)
+  -s spin     amount of color spinning (0...100)
+  -o file     output file
+  -w width    max width of the banner
+```
+
+### `welcome_message`
+
+This one prints a colorful welcome message on your terminal.
+
+Just add it to your shell config (i.e. `.zshrc`, `.bash_profile`, etc).
+
+It also accepts a few config parameters:
+```
+  -u user     override system username
+  -m message  custom message
+  -l          hide last login
+  -f font     font to use, check them here: http://www.figlet.org/examples.html
+  -c colors   comma separated hex colors (default: RGB)
+  -s spin     amount of color spinning (0...100)
+  -a times    animate n times
+  -w width    max width of the banner
+```
+
+### Dependencies
+
+You'll need `pyfiglet` and you can install it like this:
+
+```
+pip3 pyfiglet
+```
 
 ![Alt Text](docs/example.gif)
 
-Next thing I want to do is polishing some edges and try generating the text ascii banners within the script instead of using the `taag` online app. Maybe something such as https://github.com/sepandhaghighi/art will do the trick.
