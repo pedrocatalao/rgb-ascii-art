@@ -19,6 +19,8 @@ It will also take a few other parameters in order to configure the result:
   -w width    max width of the banner
 ```
 
+![Alt Text](docs/example1.png)
+
 ### welcome_message
 
 This one prints a colorful welcome message on your terminal.
@@ -37,7 +39,7 @@ It also accepts a few config parameters:
   -w width    max width of the banner
 ```
 
-![Alt Text](docs/example.gif)
+![Alt Text](docs/example2.gif)
 
 ### Dependencies
 
