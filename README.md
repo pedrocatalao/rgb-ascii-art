@@ -2,7 +2,7 @@
 
 This is my first go with Python :)
 
-This consists of a couple of small python scripts:
+It consists of a couple of small python scripts:
 
 ### colorize_ascii
 
