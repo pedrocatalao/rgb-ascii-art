@@ -1,0 +1,92 @@
+#!/usr/bin/env python3
+
+# Generates a ASCII welcome message and print it slowly (retro style) along with the last login info
+
+import re
+import sys
+import subprocess
+import pyfiglet
+import argparse
+import getpass
+from time import sleep
+
+# Command line arguments handling
+parser = argparse.ArgumentParser(description='Show colorful welcome message on your terminal')
+parser.add_argument('-u', dest='user', type=str, help='override system username', metavar='user')
+parser.add_argument('-m', dest='message', type=str, help='custom message', metavar='message')
+parser.add_argument('-l', dest='hide', help='hide last login', action='store_true', default=False)
+parser.add_argument('-f', dest='font', type=str, help='font to use, check them here: http://www.figlet.org/examples.html', default='drpepper', metavar='font')
+parser.add_argument('-c', dest='colors', type=str, help='comma separated hex colors (default: RGB)', metavar='colors', default='FF0000,FF6600,FFFF00,66FF33,66FFFF,3399FF,FF33BE')
+parser.add_argument('-s', dest='spin', type=int, help='amount of color spinning (0...100)', default=0, metavar='spin')
+parser.add_argument('-a', dest='animate', type=int, help='animate n times', default=0, metavar='times')
+parser.add_argument('-w', dest='width', type=int, help='max width of the banner', default=120, metavar='width')
+
+# Validate
+args = parser.parse_args()
+
+# Override user
+user = args.user if args.user else getpass.getuser()
+
+# Generates banner
+message = args.message if args.message else 'welcome ' + user
+banner = pyfiglet.figlet_format(message, font=args.font, width=args.width)
+content = banner.splitlines()
+
+# Add last login line
+if not args.hide:
+    subprocess = subprocess.Popen("last -1 " + getpass.getuser() + " | awk '{print \"Last login: \" $3 \" \" $4 \" \" $5 \" \" $6 \" on \" $2}'", shell=True, stdout=subprocess.PIPE)
+    subprocess_return = subprocess.stdout.read().decode('ascii')
+    content.pop()
+    content.append(str(subprocess_return))
+
+# Spin speed (can be 0) TODO: get from args
+spinSpeed = args.spin
+
+# Strips # character from the colors
+all_colors_hex = [e.lstrip('#') for e in args.colors.split(",")]
+
+# Convert to RGB values
+COLORS = [tuple(int(h[i:i+2], 16) for i in (0, 2, 4)) for h in all_colors_hex]
+
+number_of_colors = len(COLORS)
+
+# This is the length of the biggest line of the banner
+maxLength = len(max(content, key=len))
+
+# Number of transitions is the number of colors - 1
+each_color_length = maxLength // max((number_of_colors - 1), 1)
+
+# This makes sure we have enough colors for the lenght of the banner
+while each_color_length * max((number_of_colors - 1), 1) < maxLength:
+    each_color_length += 1
+
+# Appends first color to allow nice color spinning transition for last color
+COLORS.append(COLORS[0])
+
+# Generate color transitions
+all_colors_ansi = []
+for c in range(number_of_colors):
+    for x in range(each_color_length):
+        p = x / float(each_color_length)
+        r = int((1.0-p) * COLORS[c][0] + p * COLORS[c+1][0] + 0.5)
+        g = int((1.0-p) * COLORS[c][1] + p * COLORS[c+1][1] + 0.5)
+        b = int((1.0-p) * COLORS[c][2] + p * COLORS[c+1][2] + 0.5)
+        all_colors_ansi.append((r, g, b))
+
+# Generate and print color coded characters
+for _ in range(args.animate + 1):
+    sys.stdout.write("\033[0;0f")
+    for l in content:
+        for c in range(len(l)):
+            r = all_colors_ansi[c][0]
+            g = all_colors_ansi[c][1]
+            b = all_colors_ansi[c][2]
+            sys.stdout.write("\033[38;2;" + str(r) + ";" + str(g) + ";" + str(b) + "m" + l[c])
+            sys.stdout.flush()
+            sleep(0.0015)
+
+        sys.stdout.write("\n")
+
+        # Spins colors before going to next line
+        for i in range(spinSpeed):
+            all_colors_ansi.append(all_colors_ansi.pop(0))

@@ -1,0 +1,104 @@
+#!/usr/bin/env python3
+
+import re
+import sys
+import pyfiglet
+import argparse
+import atexit
+
+# Exit message
+exit_message = "\nHave fun! :)\n"
+
+# Epilog
+@atexit.register
+def epilog():
+    if exit_message:
+        print(exit_message)
+
+# Command line arguments handling
+parser = argparse.ArgumentParser(description='Generate and colorize ASCII art')
+group = parser.add_mutually_exclusive_group(required=True)
+group.add_argument('-i', dest='input', type=str, help='input file', metavar='file')
+group.add_argument('-t', dest='text', type=str, help='text to generate', metavar='text')
+parser.add_argument('-f', dest='font', type=str, help='font to use, check them here: http://www.figlet.org/examples.html', default='drpepper', metavar='font')
+parser.add_argument('-c', dest='colors', type=str, help='comma separated hex colors (default: RGB)', metavar='colors', default='FF0000,FF6600,FFFF00,66FF33,66FFFF,3399FF,FF33BE')
+parser.add_argument('-s', dest='spin', type=int, help='amount of color spinning (0...100)', default=0, metavar='spin')
+parser.add_argument('-o', dest='output', type=str, help='output file', metavar='file')
+parser.add_argument('-w', dest='width', type=int, help='max width of the banner', default=120, metavar='width')
+
+# Validate
+args = parser.parse_args()
+exit_message = None
+
+# Read file
+if args.input:
+    ascii_banner = open(args.input, "r").read()
+
+# Generate ASCII banner from text and split into lines
+elif args.text:
+    ascii_banner = pyfiglet.figlet_format(args.text, font=args.font, width=args.width)
+
+# Save each line in a list
+lines = ascii_banner.splitlines()
+
+# Spin speed (can be 0) TODO: get from args
+spinSpeed = args.spin
+
+# Strips # character from the colors
+all_colors_hex = [e.lstrip('#') for e in args.colors.split(",")]
+
+# Convert to RGB values
+COLORS = [tuple(int(h[i:i+2], 16) for i in (0, 2, 4)) for h in all_colors_hex]
+
+# Number of actual colors
+number_of_colors = len(COLORS)
+
+# Appends first color to the end to allow nice color spinning all around
+COLORS.append(COLORS[0])
+
+# Length of the widest line of the ascii banner
+maxLength = len(max(lines, key=len))
+
+# Number of transitions is the number of colors - 1
+each_color_length = maxLength // max((number_of_colors - 1), 1)
+
+# This makes sure we have enough colors for the lenght of the banner
+while each_color_length * max((number_of_colors - 1), 1) < maxLength:
+    each_color_length += 1
+
+# Generate color transitions
+all_colors_ansi = []
+for c in range(number_of_colors):
+    for x in range(each_color_length):
+        p = x / float(each_color_length)
+        r = int((1.0-p) * COLORS[c][0] + p * COLORS[c+1][0] + 0.5)
+        g = int((1.0-p) * COLORS[c][1] + p * COLORS[c+1][1] + 0.5)
+        b = int((1.0-p) * COLORS[c][2] + p * COLORS[c+1][2] + 0.5)
+        all_colors_ansi.append((r, g, b))
+
+# Generate and store color coded characters
+result=[]
+for l in lines:
+    line=""
+    for c in range(len(l)):
+        r = all_colors_ansi[c][0]
+        g = all_colors_ansi[c][1]
+        b = all_colors_ansi[c][2]
+        line = line + "\033[38;2;" + str(r) + ";" + str(g) + ";" + str(b) + "m" + l[c]
+
+    result.append(line)
+
+    # Spins colors before going to next line
+    for i in range(spinSpeed):
+        all_colors_ansi.append(all_colors_ansi.pop(0))
+
+# Store the end result
+output = "\n" + "\n".join(result) + "\n\n"
+
+# Save to file if asked
+if args.output:
+    output_file = open(args.output,"w+")
+    output_file.write(output)
+
+# Print result
+print(output),
