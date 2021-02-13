@@ -31,7 +31,7 @@ Will result in:
 
 ### welcome_message
 
-This one prints (and optional animates) a colorful welcome message on your terminal.
+This one slowly prints (retro style) and optionally animates a colorful welcome message when you open your terminal.
 
 It also accepts a few config parameters:
 ```
