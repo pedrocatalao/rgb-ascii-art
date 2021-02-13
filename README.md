@@ -1,10 +1,10 @@
 # RGB ASCII art tools
 
-This is my first go with Python :)
+Taking a shot with Python for the first time and trying to have a bit of fun in the process.
 
-It consists of a couple of small scripts:
+This consists of a couple of small scripts that play with ASCII and ANSI escape sequences to add some color to your terminal.
 
-### colorize_ascii
+## colorize_ascii
 
 This can be ran by specifying an `input file` or a `text string` to generate an ASCII banner.
 
@@ -29,9 +29,9 @@ Will result in:
 
 <img src="docs/example1.png" width="575" height="220">
 
-### welcome_message
+## welcome_message
 
-This one slowly prints (retro style) and optionally animates a colorful welcome message when you open your terminal.
+This one prints a colorful welcome message with a bit of lag (retro style) when you open your terminal.
 
 It also accepts a few config parameters:
 ```
@@ -57,9 +57,10 @@ Will yeld this result:
 
 ![Alt Text](docs/example2.gif)
 
+
 ### Dependencies
 
-You'll need `pyfiglet` and you can install it like this:
+You'll need `pyfiglet` to run this and you can install it like this:
 
 ```
 pip3 install pyfiglet
