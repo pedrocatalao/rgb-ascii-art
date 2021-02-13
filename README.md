@@ -46,7 +46,7 @@ It also accepts a few config parameters:
 You'll need `pyfiglet` and you can install it like this:
 
 ```
-pip3 pyfiglet
+pip3 install pyfiglet
 ```
 
 
