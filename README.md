@@ -14,7 +14,7 @@ It will also take a few other parameters in order to configure the result:
   -t text     text to generate
   -f font     font to use, check them here: http://www.figlet.org/examples.html
   -c colors   comma separated hex colors (for example: FF0000,00FF00,0000FF)
-  -s spin     number of columns which colors will be pushed forward on next line
+  -s spin     number of columns which colors will rotate on next line
   -o file     output file
   -w width    max width of the banner
 ```
@@ -34,7 +34,7 @@ It also accepts a few config parameters:
   -l          hide last login
   -f font     font to use, check them here: http://www.figlet.org/examples.html
   -c colors   comma separated hex colors (for example: FF0000,00FF00,0000FF)
-  -s spin     number of columns which colors will be pushed forward on next line
+  -s spin     number of columns which colors will rotate on next line
   -a times    animate n times
   -w width    max width of the banner
 ```
