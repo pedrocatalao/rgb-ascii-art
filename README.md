@@ -19,13 +19,19 @@ It will also take a few other parameters in order to configure the result:
   -w width    max width of the banner
 ```
 
-<img src="docs/example1.png" width="600" height="329">
+So, for example, this:
+
+```
+$ colorize_ascii -t "Hello World" -c FF3355,3355FF,FFFF12 -f graffiti -w 40 -s 4
+```
+
+Will result in:
+
+<img src="docs/example1.png" width="575" height="220">
 
 ### welcome_message
 
-This one prints a colorful welcome message on your terminal.
-
-Just add it to your shell config (i.e. `.zshrc`, `.bash_profile`, etc).
+This one prints (and optional animates) a colorful welcome message on your terminal.
 
 It also accepts a few config parameters:
 ```
@@ -39,6 +45,16 @@ It also accepts a few config parameters:
   -w width    max width of the banner
 ```
 
+Just add it to your shell config (i.e. `.zshrc`, `.bash_profile`, etc).
+
+Some like this:
+
+```
+welcome_message -u radix -f drpepper -s 3 -a 1
+```
+
+Will yeld this result:
+
 ![Alt Text](docs/example2.gif)
 
 ### Dependencies
@@ -48,5 +64,3 @@ You'll need `pyfiglet` and you can install it like this:
 ```
 pip3 install pyfiglet
 ```
-
-
