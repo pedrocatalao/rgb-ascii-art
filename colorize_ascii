@@ -5,8 +5,11 @@ import sys
 import pyfiglet
 import argparse
 import atexit
+import subprocess
+import getpass
+from time import sleep
 
-# Exit message
+# Help epilog message
 exit_message = "\nHave fun! :)\n"
 
 # Epilog
@@ -17,14 +20,19 @@ def epilog():
 
 # Command line arguments handling
 parser = argparse.ArgumentParser(description='Generate and colorize ASCII art')
-group = parser.add_mutually_exclusive_group(required=True)
-group.add_argument('-i', dest='input', type=str, help='input file', metavar='file')
-group.add_argument('-t', dest='text', type=str, help='text to generate', metavar='text')
+origin = parser.add_mutually_exclusive_group(required=True)
+origin.add_argument('-i', dest='input', type=str, help='input file', metavar='file')
+origin.add_argument('-t', dest='text', type=str, help='text to generate', metavar='text')
 parser.add_argument('-f', dest='font', type=str, help='font to use, check them here: http://www.figlet.org/examples.html', default='drpepper', metavar='font')
 parser.add_argument('-c', dest='colors', type=str, help='comma separated hex colors (default: RGB)', metavar='colors', default='FF0000,FF6600,FFFF00,66FF33,66FFFF,3399FF,FF33BE')
-parser.add_argument('-s', dest='spin', type=int, help='amount of color spinning (0...100)', default=0, metavar='spin')
-parser.add_argument('-o', dest='output', type=str, help='output file', metavar='file')
+parser.add_argument('-s', dest='spin', type=int, help='push colors forward n columns in the next line', choices=range(0,101), default=0, metavar='[0-100]')
 parser.add_argument('-w', dest='width', type=int, help='max width of the banner', default=120, metavar='width')
+parser.add_argument('-d', dest='delay', type=int, help='print each character with a delay (milliseconds, default: 0)', default=0, metavar='delay')
+dest = parser.add_mutually_exclusive_group(required=False)
+dest.add_argument('-o', dest='output', type=str, help='output file', metavar='file')
+dest.add_argument('-a', dest='animate', type=int, help='animate n times', default=0, metavar='times')
+parser.add_argument('-l', dest='login', type=int, help='line number to show last login information', metavar='line')
+parser.add_argument('-n', dest='newlines', type=int, help='new lines to append to the end', metavar='lines')
 
 # Validate
 args = parser.parse_args()
@@ -40,6 +48,33 @@ elif args.text:
 
 # Save each line in a list
 lines = ascii_banner.splitlines()
+
+# Add last login line at index
+login_line = args.login
+
+if args.login is not None:
+    # If negative index, add lines before
+    if args.login < 0:
+        login_line = 0
+        for _ in range(abs(args.login)):
+            lines.insert(0, "")
+    # If index bigger than banner, add lines after
+    if args.login >= len(lines):
+        for _ in range(1 + args.login - len(lines)):
+            lines.append("")
+        login_line = len(lines) - 1
+
+    # Generate login string
+    subprocess = subprocess.Popen("last -1 " + getpass.getuser() + " | awk '{print \"Last login: \" $3 \" \" $4 \" \" $5 \" \" $6 \" on \" $2}'", shell=True, stdout=subprocess.PIPE)
+    subprocess_return = subprocess.stdout.read().decode('ascii')
+    original = lines.pop(login_line)
+    res = str(subprocess_return.rstrip("\n")) + original[len(subprocess_return)-1:]
+    lines.insert(login_line, res)
+
+# If extra new lines
+if args.newlines:
+        for _ in range(args.newlines):
+            lines.append("")
 
 # Spin speed (can be 0) TODO: get from args
 spinSpeed = args.spin
@@ -77,28 +112,39 @@ for c in range(number_of_colors):
         all_colors_ansi.append((r, g, b))
 
 # Generate and store color coded characters
-result=[]
-for l in lines:
-    line=""
-    for c in range(len(l)):
-        r = all_colors_ansi[c][0]
-        g = all_colors_ansi[c][1]
-        b = all_colors_ansi[c][2]
-        line = line + "\033[38;2;" + str(r) + ";" + str(g) + ";" + str(b) + "m" + l[c]
+for a in range(args.animate + 1):
+    result=[]
+    for l in lines:
+        line=""
+        for c in range(len(l)):
+            r = all_colors_ansi[c][0]
+            g = all_colors_ansi[c][1]
+            b = all_colors_ansi[c][2]
 
-    result.append(line)
+            res = "\033[38;2;" + str(r) + ";" + str(g) + ";" + str(b) + "m" + l[c]
+            line = line + res
 
-    # Spins colors before going to next line
-    for i in range(spinSpeed):
-        all_colors_ansi.append(all_colors_ansi.pop(0))
+            # If print to screen
+            if not args.output:
+                sys.stdout.write(res)
+                sys.stdout.flush()
+                sleep(args.delay/1000)
 
-# Store the end result
-output = "\n" + "\n".join(result) + "\n\n"
+        # Move to next line
+        result.append(line)
+        if not args.output:
+            sys.stdout.write("\n")
+
+        # Spins colors before going to next line
+        for i in range(spinSpeed):
+            all_colors_ansi.append(all_colors_ansi.pop(0))
+
+    # Reset cursor position
+    if a < args.animate:
+        sys.stdout.write("\033[" + str(len(lines)) + "A")
 
 # Save to file if asked
 if args.output:
+    output = "\n".join(result) + "\n"
     output_file = open(args.output,"w+")
     output_file.write(output)
-
-# Print result
-print(output),
