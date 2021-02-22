@@ -47,7 +47,7 @@ If you want a nice welcome message when you open your terminal, just add it to y
 Some like this:
 
 ```
-colorize_ascii -t "welcome radix" -f drpepper -s 3 -a 1 -d 2 -l 5
+$ colorize_ascii -t "welcome radix" -f drpepper -s 3 -a 1 -d 2 -l 5
 ```
 
 Will yeld this result:
