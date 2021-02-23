@@ -2,33 +2,26 @@
 
 Taking a shot with Python for the first time and trying to have a bit of fun in the process.
 
-This consists of a small script that plays with ASCII and ANSI escape sequences to add some color to your terminal.
+It consists of a small script that plays with ASCII and ANSI escape sequences to add some color to your terminal.
 
 ## colorize_ascii
 
-This can be ran by specifying an `input file` or a `text string` to generate an ASCII banner.
+You can call it by specifying either an `input file` or a `text string` to generate an ASCII banner.
 
-It will also take a few other parameters in order to configure the result:
+There's a few options available in order to configure the result:
 ```
-usage: colorize_ascii [-h] (-i file | -t text) [-f font] [-c colors] [-s [0-100]] [-w width] [-d delay] [-o file | -a times] [-l line] [-n lines]
-
-Generate and colorize ASCII art
-
-optional arguments:
-  -h, --help  show this help message and exit
-  -i file     input file
-  -t text     text to generate
-  -f font     font to use, check them here: http://www.figlet.org/examples.html
-  -c colors   comma separated hex colors (default: RGB)
-  -s [0-100]  push colors forward n columns in the next line
-  -w width    max width of the banner
-  -d delay    print each character with a delay (milliseconds, default: 0)
-  -o file     output file
-  -a times    animate n times
-  -l line     line number to show last login information
-  -n lines    new lines to append to the end
-
-Have fun! :)
+  -h, --help   show this help message and exit
+  -i file      input file
+  -t text      text to generate
+  -o file      output file (will not print result in terminal)
+  -f font      font to use, check them here: http://www.figlet.org/examples.html
+  -c colors    comma separated hex colors (default: RGB)
+  -w width     maximum width of the banner
+  -s columns   push colors forward n columns in the next line
+  -a times     animate n times (requires delay)
+  -d delay     print each character with a delay (milliseconds, default: 0)
+  -l position  vertical position to show last login information
+  -n lines     new lines to append to the end
 ```
 
 So, for example, this:
@@ -47,7 +40,7 @@ If you want a nice welcome message when you open your terminal, just add it to y
 Some like this:
 
 ```
-$ colorize_ascii -t "welcome radix" -f drpepper -s 3 -a 1 -d 2 -l 5
+$ colorize_ascii -t "welcome radix" -f drpepper -s 3 -a 1 -d 2 -l 4
 ```
 
 Will yeld this result:
