@@ -23,15 +23,14 @@ parser = argparse.ArgumentParser(description='Generate and colorize ASCII art')
 origin = parser.add_mutually_exclusive_group(required=True)
 origin.add_argument('-i', dest='input', type=str, help='input file', metavar='file')
 origin.add_argument('-t', dest='text', type=str, help='text to generate', metavar='text')
+parser.add_argument('-o', dest='output', type=str, help='output file (will not print result in terminal)', metavar='file')
 parser.add_argument('-f', dest='font', type=str, help='font to use, check them here: http://www.figlet.org/examples.html', default='drpepper', metavar='font')
 parser.add_argument('-c', dest='colors', type=str, help='comma separated hex colors (default: RGB)', metavar='colors', default='FF0000,FF6600,FFFF00,66FF33,66FFFF,3399FF,FF33BE')
-parser.add_argument('-s', dest='spin', type=int, help='push colors forward n columns in the next line', choices=range(0,101), default=0, metavar='[0-100]')
-parser.add_argument('-w', dest='width', type=int, help='max width of the banner', default=120, metavar='width')
+parser.add_argument('-w', dest='width', type=int, help='maximum width of the banner', default=120, metavar='width')
+parser.add_argument('-s', dest='spin', type=int, help='push colors forward n columns in the next line', choices=range(0,101), default=0, metavar='columns')
+parser.add_argument('-a', dest='animate', type=int, help='animate n times (requires delay)', default=0, metavar='times')
 parser.add_argument('-d', dest='delay', type=int, help='print each character with a delay (milliseconds, default: 0)', default=0, metavar='delay')
-dest = parser.add_mutually_exclusive_group(required=False)
-dest.add_argument('-o', dest='output', type=str, help='output file', metavar='file')
-dest.add_argument('-a', dest='animate', type=int, help='animate n times', default=0, metavar='times')
-parser.add_argument('-l', dest='login', type=int, help='line number to show last login information', metavar='line')
+parser.add_argument('-l', dest='login', type=int, help='vertical position to show last login information', metavar='position')
 parser.add_argument('-n', dest='newlines', type=int, help='new lines to append to the end', metavar='lines')
 
 # Validate
@@ -140,7 +139,7 @@ for a in range(args.animate + 1):
             all_colors_ansi.append(all_colors_ansi.pop(0))
 
     # Reset cursor position
-    if a < args.animate:
+    if a < args.animate and not args.output:
         sys.stdout.write("\033[" + str(len(lines)) + "A")
 
 # Save to file if asked
