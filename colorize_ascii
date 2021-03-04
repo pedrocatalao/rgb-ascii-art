@@ -31,7 +31,7 @@ parser.add_argument('-s', dest='spin', type=int, help='push colors forward n col
 parser.add_argument('-a', dest='animate', type=int, help='animate n times (requires delay)', default=0, metavar='times')
 parser.add_argument('-d', dest='delay', type=int, help='print each character with a delay (milliseconds, default: 0)', default=0, metavar='delay')
 parser.add_argument('-l', dest='login', type=int, help='vertical position to show last login information', metavar='position')
-parser.add_argument('-n', dest='newlines', type=int, help='new lines to append to the end', metavar='lines')
+parser.add_argument('-n', dest='newlines', type=int, help='add or remove lines at the end (negative to remove)', metavar='lines')
 
 # Validate
 args = parser.parse_args()
@@ -70,10 +70,14 @@ if args.login is not None:
     res = str(subprocess_return.rstrip("\n")) + original[len(subprocess_return)-1:]
     lines.insert(login_line, res)
 
-# If extra new lines
+# Add or remove lines at the end
 if args.newlines:
+    if args.newlines > 0:
         for _ in range(args.newlines):
             lines.append("")
+    else:
+        for _ in range(min(abs(args.newlines), len(lines)-1)):
+            lines.pop()
 
 # Spin speed (can be 0) TODO: get from args
 spinSpeed = args.spin
