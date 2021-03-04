@@ -21,7 +21,7 @@ There's a few options available in order to configure the result:
   -a times     animate n times (requires delay)
   -d delay     print each character with a delay (milliseconds, default: 0)
   -l position  vertical position to show last login information
-  -n lines     new lines to append to the end
+  -n lines     add or remove lines at the end (negative to remove)
 ```
 
 So, for example, this:
