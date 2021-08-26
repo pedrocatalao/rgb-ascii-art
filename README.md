@@ -6,7 +6,7 @@ It consists of a small script that plays with ASCII and ANSI escape sequences to
 
 ## colorize_ascii
 
-You can call it by specifying either an `input file` or a `text string` to generate an ASCII banner.
+You can call it by specifying either an `input file` or a `text string` to generate an ASCII banner. It's also possible to call it only with `-l` to show the last login information.
 
 There's a few options available in order to configure the result:
 ```
