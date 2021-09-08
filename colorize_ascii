@@ -20,7 +20,7 @@ def epilog():
 
 # Command line arguments handling
 parser = argparse.ArgumentParser(description='Generate and colorize ASCII art')
-origin = parser.add_mutually_exclusive_group(required=True)
+origin = parser.add_mutually_exclusive_group(required=False)
 origin.add_argument('-i', dest='input', type=str, help='input file', metavar='file')
 origin.add_argument('-t', dest='text', type=str, help='text to generate', metavar='text')
 parser.add_argument('-o', dest='output', type=str, help='output file (will not print result in terminal)', metavar='file')
@@ -37,6 +37,9 @@ parser.add_argument('-n', dest='newlines', type=int, help='add or remove lines a
 args = parser.parse_args()
 exit_message = None
 
+# Init
+ascii_banner = None
+
 # Read file
 if args.input:
     ascii_banner = open(args.input, "r").read()
@@ -46,7 +49,10 @@ elif args.text:
     ascii_banner = pyfiglet.figlet_format(args.text, font=args.font, width=args.width)
 
 # Save each line in a list
-lines = ascii_banner.splitlines()
+if ascii_banner is not None:
+    lines = ascii_banner.splitlines()
+else:
+    lines = []
 
 # Add last login line at index
 login_line = args.login
