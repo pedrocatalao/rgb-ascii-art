@@ -48,6 +48,10 @@ if args.input:
 elif args.text:
     ascii_banner = pyfiglet.figlet_format(args.text, font=args.font, width=args.width)
 
+elif not args.login:
+    parser.print_help(sys.stderr)
+    exit()
+
 # Save each line in a list
 if ascii_banner is not None:
     lines = ascii_banner.splitlines()
