@@ -24,7 +24,7 @@ There's a few options available in order to configure the result:
   -n lines     add or remove lines at the end (negative to remove)
 ```
 
-So, for example, this:
+For example, this:
 
 ```
 $ colorize_ascii -t "Hello World" -c FF3355,3355FF,FFFF12 -f graffiti -w 40 -s 4
