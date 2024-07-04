@@ -50,8 +50,20 @@ Will yeld this result:
 
 ### Dependencies
 
-You'll need `pyfiglet` to run this and you can install it like this:
+You'll need `figlet` to run this and you can install it like this:
 
+On mac with brew:
+```
+brew install figlet
+```
+
+On ubuntu with apt:
+```
+apt install figlet
+```
+
+With pip:
 ```
 pip3 install pyfiglet
 ```
+Note: you might need to add `--break-system-packages` for newer Python versions
