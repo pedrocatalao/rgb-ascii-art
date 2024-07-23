@@ -1,10 +1,10 @@
-# RGB ASCII art tools
+# RGB ASCII art (rgbify)
 
 Taking a shot with Python for the first time and trying to have a bit of fun in the process.
 
 It consists of a small script that plays with ASCII and ANSI escape sequences to add some color to your terminal.
 
-## colorize_ascii
+## rgbify
 
 You can call it by specifying either an `input file` or a `text string` to generate an ASCII banner. It's also possible to call it only with `-l` to show the last login information.
 
@@ -27,7 +27,7 @@ There's a few options available in order to configure the result:
 For example, this:
 
 ```
-$ colorize_ascii -t "Hello World" -c FF3355,3355FF,FFFF12 -f graffiti -w 40 -s 4
+$ rgbify -t "Hello World" -c FF3355,3355FF,FFFF12 -f graffiti -w 40 -s 4
 ```
 
 Will result in:
@@ -40,7 +40,7 @@ If you want a nice welcome message when you open your terminal, just add it to y
 Some like this:
 
 ```
-$ colorize_ascii -t "welcome radix" -f drpepper -s 3 -a 1 -d 2 -l 4
+$ rgbify -t "welcome radix" -f drpepper -s 3 -a 1 -d 2 -l 4
 ```
 
 Will yeld this result:
