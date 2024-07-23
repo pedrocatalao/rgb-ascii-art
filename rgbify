@@ -1,0 +1,160 @@
+#!/usr/bin/env python3
+
+import re
+import sys
+import pyfiglet
+import argparse
+import atexit
+import subprocess
+import getpass
+from time import sleep
+
+# Help epilog message
+exit_message = "\nHave fun! :)\n"
+
+# Epilog
+@atexit.register
+def epilog():
+    if exit_message:
+        print(exit_message)
+
+# Command line arguments handling
+parser = argparse.ArgumentParser(description='Generate and colorize ASCII art')
+origin = parser.add_mutually_exclusive_group(required=False)
+origin.add_argument('-i', dest='input', type=str, help='input file', metavar='file')
+origin.add_argument('-t', dest='text', type=str, help='text to generate', metavar='text')
+parser.add_argument('-o', dest='output', type=str, help='output file (will not print result in terminal)', metavar='file')
+parser.add_argument('-f', dest='font', type=str, help='font to use, check them here: http://www.figlet.org/examples.html', default='drpepper', metavar='font')
+parser.add_argument('-c', dest='colors', type=str, help='comma separated hex colors (default: RGB)', metavar='colors', default='FF0000,FF6600,FFFF00,66FF33,66FFFF,3399FF,FF33BE')
+parser.add_argument('-w', dest='width', type=int, help='maximum width of the banner', default=120, metavar='width')
+parser.add_argument('-s', dest='shift', type=int, help='shift colors forward n columns in the next line', choices=range(0,101), default=0, metavar='columns')
+parser.add_argument('-a', dest='animate', type=int, help='animate n times (requires delay)', default=0, metavar='times')
+parser.add_argument('-d', dest='delay', type=int, help='print each character with a delay (milliseconds, default: 0)', default=0, metavar='delay')
+parser.add_argument('-l', dest='login', type=int, help='vertical position to show last login information', metavar='position')
+parser.add_argument('-n', dest='newlines', type=int, help='add or remove lines at the end (negative to remove)', metavar='lines')
+
+# Validate
+args = parser.parse_args()
+exit_message = None
+
+# Init
+ascii_banner = None
+
+# Read file
+if args.input:
+    ascii_banner = open(args.input, "r").read()
+
+# Generate ASCII banner from text and split into lines
+elif args.text:
+    ascii_banner = pyfiglet.figlet_format(args.text, font=args.font, width=args.width)
+
+elif not args.login and args.login != 0:
+    parser.print_help(sys.stderr)
+    exit()
+
+# Save each line in a list
+if ascii_banner is not None:
+    lines = ascii_banner.splitlines()
+else:
+    lines = []
+
+# Add last login line at index
+login_line = args.login
+
+if args.login is not None:
+    # If negative index, add lines before
+    if args.login < 0:
+        login_line = 0
+        for _ in range(abs(args.login)):
+            lines.insert(0, "")
+    # If index bigger than banner, add lines after
+    if args.login >= len(lines):
+        for _ in range(1 + args.login - len(lines)):
+            lines.append("")
+        login_line = len(lines) - 1
+
+    # Generate login string
+    subprocess = subprocess.Popen("last -1 " + getpass.getuser() + " | awk '{print \"Last login: \" $3 \" \" $4 \" \" $5 \" \" $6 \" on \" $2}'", shell=True, stdout=subprocess.PIPE)
+    subprocess_return = subprocess.stdout.read().decode('ascii')
+    original = lines.pop(login_line)
+    res = str(subprocess_return.rstrip("\n")) + original[len(subprocess_return)-1:]
+    lines.insert(login_line, res)
+
+# Add or remove lines at the end
+if args.newlines:
+    if args.newlines > 0:
+        for _ in range(args.newlines):
+            lines.append("")
+    else:
+        for _ in range(min(abs(args.newlines), len(lines)-1)):
+            lines.pop()
+
+# Strips # character from the colors
+all_colors_hex = [e.lstrip('#') for e in args.colors.split(",")]
+
+# Convert to RGB values
+COLORS = [tuple(int(h[i:i+2], 16) for i in (0, 2, 4)) for h in all_colors_hex]
+
+# Number of actual colors
+number_of_colors = len(COLORS)
+
+# Appends first color to the end to allow nice color shift all around
+COLORS.append(COLORS[0])
+
+# Length of the widest line of the ascii banner
+maxLength = len(max(lines, key=len))
+
+# Number of transitions is the number of colors - 1
+each_color_length = maxLength // max((number_of_colors - 1), 1)
+
+# This makes sure we have enough colors for the lenght of the banner
+while each_color_length * max((number_of_colors - 1), 1) < maxLength:
+    each_color_length += 1
+
+# Generate color transitions
+all_colors_ansi = []
+for c in range(number_of_colors):
+    for x in range(each_color_length):
+        p = x / float(each_color_length)
+        r = int((1.0-p) * COLORS[c][0] + p * COLORS[c+1][0] + 0.5)
+        g = int((1.0-p) * COLORS[c][1] + p * COLORS[c+1][1] + 0.5)
+        b = int((1.0-p) * COLORS[c][2] + p * COLORS[c+1][2] + 0.5)
+        all_colors_ansi.append((r, g, b))
+
+# Generate and store color coded characters
+for a in range(args.animate + 1):
+    result=[]
+    for l in lines:
+        line=""
+        for c in range(len(l)):
+            r = all_colors_ansi[c][0]
+            g = all_colors_ansi[c][1]
+            b = all_colors_ansi[c][2]
+
+            res = "\033[38;2;" + str(r) + ";" + str(g) + ";" + str(b) + "m" + l[c]
+            line = line + res
+
+            # If print to screen
+            if not args.output:
+                sys.stdout.write(res)
+                sys.stdout.flush()
+                sleep(args.delay/1000)
+
+        # Move to next line
+        result.append(line)
+        if not args.output:
+            sys.stdout.write("\n")
+
+        # Shift colors before going to next line
+        for i in range(args.shift):
+            all_colors_ansi.append(all_colors_ansi.pop(0))
+
+    # Reset cursor position
+    if a < args.animate and not args.output:
+        sys.stdout.write("\033[" + str(len(lines)) + "A")
+
+# Save to file if asked
+if args.output:
+    output = "\n".join(result) + "\n"
+    output_file = open(args.output,"w+")
+    output_file.write(output)
