@@ -27,7 +27,7 @@ parser.add_argument('-o', dest='output', type=str, help='output file (will not p
 parser.add_argument('-f', dest='font', type=str, help='font to use, check them here: http://www.figlet.org/examples.html', default='drpepper', metavar='font')
 parser.add_argument('-c', dest='colors', type=str, help='comma separated hex colors (default: RGB)', metavar='colors', default='FF0000,FF6600,FFFF00,66FF33,66FFFF,3399FF,FF33BE')
 parser.add_argument('-w', dest='width', type=int, help='maximum width of the banner', default=120, metavar='width')
-parser.add_argument('-s', dest='spin', type=int, help='push colors forward n columns in the next line', choices=range(0,101), default=0, metavar='columns')
+parser.add_argument('-s', dest='shift', type=int, help='shift colors forward n columns in the next line', choices=range(0,101), default=0, metavar='columns')
 parser.add_argument('-a', dest='animate', type=int, help='animate n times (requires delay)', default=0, metavar='times')
 parser.add_argument('-d', dest='delay', type=int, help='print each character with a delay (milliseconds, default: 0)', default=0, metavar='delay')
 parser.add_argument('-l', dest='login', type=int, help='vertical position to show last login information', metavar='position')
@@ -89,9 +89,6 @@ if args.newlines:
         for _ in range(min(abs(args.newlines), len(lines)-1)):
             lines.pop()
 
-# Spin speed (can be 0) TODO: get from args
-spinSpeed = args.spin
-
 # Strips # character from the colors
 all_colors_hex = [e.lstrip('#') for e in args.colors.split(",")]
 
@@ -101,7 +98,7 @@ COLORS = [tuple(int(h[i:i+2], 16) for i in (0, 2, 4)) for h in all_colors_hex]
 # Number of actual colors
 number_of_colors = len(COLORS)
 
-# Appends first color to the end to allow nice color spinning all around
+# Appends first color to the end to allow nice color shift all around
 COLORS.append(COLORS[0])
 
 # Length of the widest line of the ascii banner
@@ -148,8 +145,8 @@ for a in range(args.animate + 1):
         if not args.output:
             sys.stdout.write("\n")
 
-        # Spins colors before going to next line
-        for i in range(spinSpeed):
+        # Shift colors before going to next line
+        for i in range(args.shift):
             all_colors_ansi.append(all_colors_ansi.pop(0))
 
     # Reset cursor position
