@@ -1,4 +1,4 @@
-# RGB ASCII art (rgbify)
+# RGB ASCII Art (rgbify) ![GitHub Repo stars](https://img.shields.io/github/stars/pedrocatalao/rgb-ascii-art)
 
 Taking a shot with Python for the first time and trying to have a bit of fun in the process.
 
