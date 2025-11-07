@@ -66,4 +66,4 @@ With pip:
 ```
 pip3 install pyfiglet
 ```
-Note: you might need to add `--break-system-packages` for newer Python versions
+Note: you might need to add `--break-system-packages` or setup a virtual env for newer Python versions
